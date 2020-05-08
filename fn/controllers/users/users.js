@@ -117,9 +117,7 @@ const updateCart = asyncHandler(async (req, res, next) => {
 
 const updateWishList = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const wishlist  = req.body;
-
-    console.log(wishlist.products)
+    const wishlist  = req.body.products;
 
     const userToUpdate = await Users.findById(id);
     if (!userToUpdate) {
@@ -127,9 +125,8 @@ const updateWishList = asyncHandler(async (req, res, next) => {
             new ErrorResponse('User doesnt exist.', 404)
         );
     }
+    userToUpdate.wishlist = wishlist;
     console.log(userToUpdate.wishlist)
-    userToUpdate.wishlist = wishlist.products;
-
     await userToUpdate.save();
     res.status(200).send({ msg: 'user wishlist successfully changed', userToUpdate });
 });

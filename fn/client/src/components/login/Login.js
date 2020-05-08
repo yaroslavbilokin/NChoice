@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from "react-redux";
 
-import { setUserLogged, setUserLoading, setCart } from "../../actions";
+import { setUserLogged, setUserLoading, setCart, setUser } from "../../actions";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
@@ -25,8 +25,8 @@ const USER_DATA = {
 };
 const eye = <FontAwesomeIcon icon={faEye} />;
 
-const Login = ({ storeService, setUserLogged, setUserLoading, userLogged, userLoading, setCart }) => {
-    const [user, setUser] = useState(USER_DATA);
+const Login = ({ storeService, setUserLogged, setUserLoading, userLogged, userLoading, setCart, setUser }) => {
+    const [userData, setUserData] = useState(USER_DATA);
     const [errorMsg, setErrorMsg] = useState('');
 
     const { register, errors, handleSubmit } = useForm({
@@ -44,18 +44,22 @@ const Login = ({ storeService, setUserLogged, setUserLoading, userLogged, userLo
 
     const handleChange = (event) => {
         event.persist();
-        setUser(prevUser => ({ ...prevUser, [event.target.name]: event.target.value }));
+        setUserData(prevUser => ({ ...prevUser, [event.target.name]: event.target.value }));
     };
 
     const postUser = async () => {
         try {
             setUserLoading();
-            const response = await storeService.loginUser(user);
+            const response = await storeService.loginUser(userData);
             if (!response) throw new Error('Wrong email or password, please try again.')
             const { accessToken, refreshToken, cart, userId } = response
             setUserLogged(true);
             addDataToLocalStorage({ accessToken, refreshToken, userId })
             setCart(cart)
+            storeService.getUserById(userId,accessToken).then((res) => {
+                const { user } = res.data;
+                setUser(user)
+            })
         } catch (err) {
             setUserLogged(false)
             setErrorMsg(err.message)
@@ -84,7 +88,7 @@ const Login = ({ storeService, setUserLogged, setUserLoading, userLogged, userLo
                         type="text"
                         placeholder="Enter email"
                         name={'email'}
-                        value={user.email}
+                        value={userData.email}
                         onChange={handleChange}
                         ref={register}
                     />
@@ -101,7 +105,7 @@ const Login = ({ storeService, setUserLogged, setUserLoading, userLogged, userLo
                             type={passwordShown ? "text" : "password"}
                             placeholder="Password"
                             name={'password'}
-                            value={user.password}
+                            value={userData.password}
                             onChange={handleChange}
                             ref={register}
                             autoComplete="on"
@@ -131,7 +135,7 @@ const Login = ({ storeService, setUserLogged, setUserLoading, userLogged, userLo
 };
 
 
-const mapDispatchToProps = { setUserLogged, setUserLoading, setCart };
+const mapDispatchToProps = { setUserLogged, setUserLoading, setCart, setUser };
 
 const mapStateToProps = ({ authReducer: { userLogged, userLoading } }) => ({
     userLogged, userLoading

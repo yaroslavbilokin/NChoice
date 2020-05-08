@@ -40,7 +40,9 @@ const UserModel = new Schema({
         default: Date.now,
     },
     tokens: [String],
-    wishlist: [String],
+    wishlist: {
+        type: Array
+    },
     cart: {
         cartProducts: Array,
         cartNumbers: {

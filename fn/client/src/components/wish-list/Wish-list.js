@@ -8,18 +8,9 @@ import ReadMoreReact from 'read-more-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { addToWishlist, removeFromWishlist } from "../../actions";
-import { getFromLocalStorage } from "../../services/localStoreService";
 
 
 const Wishlist = ({removeFromWishlist, products}) => {
-
-  // const [products, setProducts] = useState([]);
-  
-  // useEffect(() => {
-  //   if (getFromLocalStorage('wishlist_collection')) {
-  //     setProducts(getFromLocalStorage('wishlist_collection'));
-  //   }
-  // }, []);
 
   const handleRemoveFromWishlist = (item) => {
     removeFromWishlist(item);
